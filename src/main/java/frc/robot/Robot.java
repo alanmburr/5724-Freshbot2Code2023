@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
 
   private XboxController xboxDriver = new XboxController(0);
   private DriveTrainSubsystem driveTrainSubsystem = new DriveTrainSubsystem();
-  private LedSubsystem ledSubsystem = new LedSubsystem(0);
+  private LedSubsystem ledSubsystem = new LedSubsystem(0, xboxDriver);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -56,10 +56,6 @@ public class Robot extends TimedRobot {
 
       driveTrainSubsystem.broMomentum(speedMod);
     }, driveTrainSubsystem));
-
-    ledSubsystem.setDefaultCommand(new RunCommand(() -> {
-      ledSubsystem.White();
-    }, ledSubsystem));
   }
 
   /**
@@ -72,8 +68,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    //ledSubsystem.White();
   }
 
   /**

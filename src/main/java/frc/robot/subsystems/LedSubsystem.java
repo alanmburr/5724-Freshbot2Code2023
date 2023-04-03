@@ -1,17 +1,16 @@
 package frc.robot.subsystems;
 
-import javax.swing.text.AbstractDocument.LeafElement;
-
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LedSubsystem extends SubsystemBase {
     int totalLEDs = 83;
-    private int port = 0;
     AddressableLED ledStrip;
     AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(totalLEDs);
+    XboxController xboxController;
     private Timer timer = new Timer();
     private int ledNumber;
     private int firstHSV;
@@ -25,8 +24,14 @@ public class LedSubsystem extends SubsystemBase {
     public int[] kWhite = {255, 255, 255};
 
     // Initialize... :)
-    public LedSubsystem(int port) {
+    /**
+     * @apiNote Check the periodic for XboxController logic!
+     * @param port - PWM port for the LED strip
+     * @param xbox - an instance of an XboxController class from Robot.java
+     */
+    public LedSubsystem(int port, XboxController xbox) {
         ledStrip = new AddressableLED(port);
+        xboxController = xbox;
         ledStrip.setLength(ledBuffer.getLength());
         ledStrip.setData(ledBuffer);
         ledStrip.start();
@@ -126,7 +131,6 @@ public class LedSubsystem extends SubsystemBase {
 
     public void Off() {
       int TotalLeds = ledBuffer.getLength();
-      double time = Math.ceil(timer.get() * 1.5) % 2;
       for (int i = 0; i < TotalLeds; i++) {
         ledBuffer.setRGB(i, kBlack[0], kBlack[1], kBlack[2]);
       }
@@ -143,6 +147,9 @@ public class LedSubsystem extends SubsystemBase {
         ledStrip.setData(ledBuffer);
     }
 
+    /**
+     * @deprecated Because it doesn't work and there's no experimental flag.
+     */
     public void RunUpStrip() {
       double time = Math.ceil(timer.get() * 50) % 2;
       int TotalLeds = ledBuffer.getLength();
@@ -153,8 +160,18 @@ public class LedSubsystem extends SubsystemBase {
           ledBuffer.setRGB(i, kGrey[0], kGrey[1], kGrey[2]);
         }
       }
+
       ledNumber += 5;
       ledNumber %= TotalLeds;
       ledStrip.setData(ledBuffer);
+    }
+
+    /* We @Override periodic() because it causes less trouble 
+     * and it means that there's no need to do anything
+     * other than just initialize the LedSubsystem in Robot.java
+    */
+    @Override
+    public void periodic() {
+      White();
     }
 }
